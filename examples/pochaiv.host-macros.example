@@ -1,0 +1,20 @@
+# Historical/example values, NOT a Zabbix import or verification of current state
+{$UPS.IP}=172.16.0.25
+{$UPS.PORT}=9999
+{$UPS.TIMEOUT}=3
+{$UPS.INTERVAL}=10m
+{$UPS.NODATA}=25m
+{$UPS.BATTERY.MULTIPLIER}=12
+{$UPS.CELL.MULTIPLIER}=1.875
+{$UPS.POWER.RATED.W}=1000
+{$UPS.CAPACITY}=200
+{$UPS.USABLE}=0.80
+{$UPS.EFF}=0.85
+{$UPS.BATTERY.VOLT.MAX}=27.6
+{$UPS.BATTERY.VOLT.MIN}=21
+{$UPS.BATTERY.VOLT.WARN}=0
+{$UPS.BATTERY.VOLT.CRIT}=0
+{$UPS.SOC.ALERTS.ENABLED}=0
+{$UPS.SOC.WARN}=30
+{$UPS.SOC.CRIT}=15
+# Confirm physical W rating, battery wiring, multiplier and cell voltage via meter/BMS
