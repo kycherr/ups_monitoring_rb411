@@ -1,0 +1,1502 @@
+zabbix_export:
+  version: '8.0'
+  template_groups:
+  - uuid: b6ac3fa619604430ac532c7037523cc7
+    name: Templates/Power
+  templates:
+  - uuid: 505d33a15d4a435fa76f4264f0a3a8da
+    template: KWDS UPS Megatec by TCP
+    name: KWDS UPS Megatec by TCP
+    description: 'Read-only Megatec Q1 via MikroTik RAW TCP. ExternalScripts ups_megatec.py; host macros control
+      connection and thresholds. No SOC estimation.
+
+
+      Версія оформлення: 10.6 (2026-10-16). Українські описи макросів; компактна картка стану живлення.
+
+      V10.7: текстовий стан живлення без числового суфікса, одна нейтральна тонована картка (без динамічного фону).'
+    groups:
+    - name: Templates/Power
+    macros:
+    - macro: '{$UPS.IP}'
+      value: 127.0.0.1
+      description: IP-адреса MikroTik з RAW TCP Serial для цього UPS. Задається на хості.
+    - macro: '{$UPS.PORT}'
+      value: '9999'
+      description: TCP-порт RAW Serial на MikroTik (типово 9999).
+    - macro: '{$UPS.INTERVAL}'
+      value: 10m
+      description: Період опитування Megatec Q1 (наприклад 10m).
+    - macro: '{$UPS.TIMEOUT}'
+      value: '3'
+      description: Загальний таймаут TCP-запиту UPS у секундах. Має бути меншим за Timeout Zabbix Server.
+    - macro: '{$UPS.NODATA}'
+      value: 25m
+      description: Інтервал без свіжих вимірювань перед аварією зв'язку. Повинен перевищувати інтервал опитування.
+    - macro: '{$UPS.INPUT.MIN}'
+      value: '180'
+      description: Мінімальна допустима вхідна напруга, В. Нижче спрацьовує попередження.
+    - macro: '{$UPS.INPUT.MAX}'
+      value: '250'
+      description: Максимальна допустима вхідна напруга, В. Вище спрацьовує попередження.
+    - macro: '{$UPS.OUTPUT.MIN}'
+      value: '200'
+      description: Мінімальна допустима вихідна напруга UPS, В.
+    - macro: '{$UPS.OUTPUT.MAX}'
+      value: '240'
+      description: Максимальна допустима вихідна напруга UPS, В.
+    - macro: '{$UPS.LOAD.MAX}'
+      value: '80'
+      description: Максимальне допустиме навантаження UPS, %. Вище аварія High.
+    - macro: '{$UPS.TEMP.MAX}'
+      value: '45'
+      description: Максимальна температура UPS, °C. Вище попередження.
+    - macro: '{$UPS.FREQ.MIN}'
+      value: '49'
+      description: Мінімальна допустима частота UPS, Гц.
+    - macro: '{$UPS.FREQ.MAX}'
+      value: '51'
+      description: Максимальна допустима частота UPS, Гц.
+    - macro: '{$UPS.BATTERY.MULTIPLIER}'
+      value: '0'
+      description: Множник поля BatteryRaw для оцінки напруги всього АКБ, В. 0 вимикає розрахунок; калібрується
+        на кожному хості.
+    - macro: '{$UPS.BATTERY.VOLT.WARN}'
+      value: '0'
+      description: Попередження про низьку напругу АКБ, В. 0 вимикає поріг; лише після калібрування.
+    - macro: '{$UPS.BATTERY.VOLT.CRIT}'
+      value: '0'
+      description: Критичний поріг напруги АКБ, В. 0 вимикає поріг; лише після калібрування.
+    - macro: '{$UPS.POWER.RATED.W}'
+      value: '0'
+      description: Паспортна активна потужність UPS, Вт (не VA). 0 вимикає приблизний розрахунок потужності.
+    - macro: '{$UPS.CAPACITY}'
+      value: '0'
+      description: Оціночна ефективна ємність батарейної системи, А·год. Це калібрувальний параметр хоста; 0 =
+        не налаштовано.
+    - macro: '{$UPS.USABLE}'
+      value: '0.80'
+      description: Коефіцієнт доступної енергії АКБ (частка 0–1), початково 0.80. Не є SOC.
+    - macro: '{$UPS.EFF}'
+      value: '0.85'
+      description: Оціночний ККД UPS (частка 0–1), початково 0.85.
+    - macro: '{$UPS.SOC.WARN}'
+      value: '30'
+      description: Поріг попередження за СПРАВЖНІМ SOC, %, типово 30. Не застосовувати до BatteryRaw.
+    - macro: '{$UPS.SOC.CRIT}'
+      value: '15'
+      description: Критичний поріг за СПРАВЖНІМ SOC, %, типово 15. Потребує достовірного SOC.
+    - macro: '{$UPS.SOC.ALERTS.ENABLED}'
+      value: '0'
+      description: 0 = аварії за SOC вимкнено; 1 = увімкнено тільки після калібрування/отримання достовірного
+        BatteryCharge.
+    - macro: '{$UPS.BATTERY.VOLT.MAX}'
+      value: '27.6'
+      description: Верхня межа напруги АКБ, В, для нелінійної оцінки автономності. Для Почаєва робоча гіпотеза
+        27.6 В.
+    - macro: '{$UPS.BATTERY.VOLT.MIN}'
+      value: '21'
+      description: Нижня межа напруги АКБ, В, для нелінійної оцінки автономності. Має бути меншою за MAX.
+    - macro: '{$UPS.CELL.MULTIPLIER}'
+      value: '0'
+      description: Множник BatteryRaw для ОЦІНКИ напруги однієї Li-ion комірки. 0 вимикає; для Почаєва гіпотеза
+        1.875.
+    - macro: '{$UPS.TEMPLATE.VERSION}'
+      value: '10.7'
+      description: Інформаційна версія YAML-шаблону KWDS UPS. Не змінює збір даних, пороги чи обчислення.
+    items:
+    - uuid: d0da7003f152450e9ab7b2b019f9df2d
+      name: 'UPS: Megatec Q1 JSON'
+      type: EXTERNAL
+      key: ups_megatec.py["{$UPS.IP}","{$UPS.PORT}","{$UPS.TIMEOUT}"]
+      delay: '{$UPS.INTERVAL}'
+      value_type: TEXT
+      history: 7d
+      description: One Q1 request; JSON master for dependent items. Configure UPS.IP per host.
+    - uuid: f104739a63c04dcdb1ebf4c907b415ec
+      name: 'UPS: Input voltage'
+      type: DEPENDENT
+      key: ups.InputVoltage
+      value_type: FLOAT
+      history: 30d
+      master_item:
+        key: ups_megatec.py["{$UPS.IP}","{$UPS.PORT}","{$UPS.TIMEOUT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $["ups.InputVoltage"]
+        error_handler: DISCARD_VALUE
+      trends: 365d
+      units: V
+    - uuid: 9b5ceb4216ac4bf58af83c108db3dc23
+      name: 'UPS: Output voltage'
+      type: DEPENDENT
+      key: ups.OutputVoltage
+      value_type: FLOAT
+      history: 30d
+      master_item:
+        key: ups_megatec.py["{$UPS.IP}","{$UPS.PORT}","{$UPS.TIMEOUT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $["ups.OutputVoltage"]
+        error_handler: DISCARD_VALUE
+      trends: 365d
+      units: V
+    - uuid: de89379a4ef54be29eaa056104cd7996
+      name: 'UPS: Battery pack voltage (calibrated only)'
+      type: DEPENDENT
+      key: ups.BatteryVoltage
+      value_type: FLOAT
+      history: 30d
+      master_item:
+        key: ups_megatec.py["{$UPS.IP}","{$UPS.PORT}","{$UPS.TIMEOUT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $["ups.BatteryRaw"]
+        error_handler: DISCARD_VALUE
+      - type: JAVASCRIPT
+        parameters:
+        - 'var k = Number(''{$UPS.BATTERY.MULTIPLIER}'');
+
+          var raw = Number(value);
+
+          if (!isFinite(k) || k <= 0 || !isFinite(raw) || raw < 0) return null;
+
+          return Math.round(raw * k * 1000) / 1000;'
+        error_handler: DISCARD_VALUE
+      trends: 365d
+      units: V
+      description: Raw Q1 battery field multiplied by host {$UPS.BATTERY.MULTIPLIER}. Default 0 discards values
+        until calibrated. SOC remains disabled.
+    - uuid: bb98c1be7dce46828f35c03d45220dff
+      name: 'UPS: Battery charge (uncalibrated)'
+      type: DEPENDENT
+      key: ups.BatteryCharge
+      value_type: FLOAT
+      history: 30d
+      master_item:
+        key: ups_megatec.py["{$UPS.IP}","{$UPS.PORT}","{$UPS.TIMEOUT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $["ups.BatteryCharge"]
+        error_handler: DISCARD_VALUE
+      trends: 365d
+      units: '%'
+      description: Reserved key; collector intentionally does not produce this value until calibration.
+    - uuid: b2891a8132714fb2996b047eaf8a101c
+      name: 'UPS: UPS load'
+      type: DEPENDENT
+      key: ups.UpsLoad
+      value_type: UNSIGNED
+      history: 30d
+      master_item:
+        key: ups_megatec.py["{$UPS.IP}","{$UPS.PORT}","{$UPS.TIMEOUT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $["ups.UpsLoad"]
+        error_handler: DISCARD_VALUE
+      trends: 365d
+      units: '%'
+    - uuid: bf8274e0c5ab4fbfa7022d1bdd24511c
+      name: 'UPS: UPS frequency'
+      type: DEPENDENT
+      key: ups.UpsFreq
+      value_type: FLOAT
+      history: 30d
+      master_item:
+        key: ups_megatec.py["{$UPS.IP}","{$UPS.PORT}","{$UPS.TIMEOUT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $["ups.UpsFreq"]
+        error_handler: DISCARD_VALUE
+      trends: 365d
+      units: Hz
+    - uuid: 585eb6a9adaf40259cd6c9b9831e0e89
+      name: 'UPS: UPS temperature'
+      type: DEPENDENT
+      key: ups.UpsTemp
+      value_type: FLOAT
+      history: 30d
+      master_item:
+        key: ups_megatec.py["{$UPS.IP}","{$UPS.PORT}","{$UPS.TIMEOUT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $["ups.UpsTemp"]
+        error_handler: DISCARD_VALUE
+      trends: 365d
+      units: °C
+    - uuid: cd0a2b10a3364e8bb615913fe72772fc
+      name: 'UPS: UPS status'
+      type: DEPENDENT
+      key: ups.UpsStatus
+      value_type: CHAR
+      history: 30d
+      master_item:
+        key: ups_megatec.py["{$UPS.IP}","{$UPS.PORT}","{$UPS.TIMEOUT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $["ups.UpsStatus"]
+        error_handler: DISCARD_VALUE
+    - uuid: b1bbfd1060b84601a8b616b64337798f
+      name: 'UPS: On battery flag'
+      type: DEPENDENT
+      key: ups.OnBattery
+      value_type: UNSIGNED
+      history: 30d
+      master_item:
+        key: ups_megatec.py["{$UPS.IP}","{$UPS.PORT}","{$UPS.TIMEOUT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $["ups.OnBattery"]
+        error_handler: DISCARD_VALUE
+      trends: 365d
+      valuemap:
+        name: KWDS UPS yes/no UA
+    - uuid: 22ff9d4ee126417db47f0dd5bb94f17a
+      name: 'UPS: Battery low flag'
+      type: DEPENDENT
+      key: ups.BatteryLow
+      value_type: UNSIGNED
+      history: 30d
+      master_item:
+        key: ups_megatec.py["{$UPS.IP}","{$UPS.PORT}","{$UPS.TIMEOUT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $["ups.BatteryLow"]
+        error_handler: DISCARD_VALUE
+      trends: 365d
+      valuemap:
+        name: KWDS UPS yes/no UA
+    - uuid: 554bcd10e99e41bbb6b75e4407cc93f2
+      name: 'UPS: Raw Megatec battery field (not pack voltage)'
+      type: DEPENDENT
+      key: ups.BatteryRaw
+      value_type: FLOAT
+      history: 30d
+      master_item:
+        key: ups_megatec.py["{$UPS.IP}","{$UPS.PORT}","{$UPS.TIMEOUT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $["ups.BatteryRaw"]
+        error_handler: DISCARD_VALUE
+      trends: 365d
+    - uuid: 761d0f676bc5433b9671c70e835f1c99
+      name: 'UPS: Raw Megatec status bits'
+      type: DEPENDENT
+      key: ups.StatusBits
+      value_type: CHAR
+      history: 30d
+      master_item:
+        key: ups_megatec.py["{$UPS.IP}","{$UPS.PORT}","{$UPS.TIMEOUT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $["ups.StatusBits"]
+        error_handler: DISCARD_VALUE
+    - uuid: fa17469c5a014ba3a013f7c576e9b894
+      name: 'UPS: Estimated output power (not measured)'
+      type: DEPENDENT
+      key: ups.OutputPowerEstimated
+      value_type: FLOAT
+      history: 30d
+      trends: 365d
+      units: W
+      master_item:
+        key: ups_megatec.py["{$UPS.IP}","{$UPS.PORT}","{$UPS.TIMEOUT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $["ups.UpsLoad"]
+        error_handler: DISCARD_VALUE
+      - type: JAVASCRIPT
+        parameters:
+        - var rated = Number('{$UPS.POWER.RATED.W}'); var load = Number(value); if (!isFinite(rated) || rated
+          <= 0 || !isFinite(load) || load < 0 || load > 100) return null; return Math.round(rated * load / 100
+          * 10) / 10;
+        error_handler: DISCARD_VALUE
+      description: 'INDICATIVE ONLY: assumes reported UPS load percent scales linearly with rated active watts.
+        Not measured W; depends on UPS manufacturer reporting and rating. Default 0 disables.'
+    - uuid: c65cc388438c49b380198b5930bd6de5
+      name: 'UPS: Estimated remaining runtime (voltage-adjusted, indicative)'
+      type: CALCULATED
+      key: ups.RuntimeEstimated
+      value_type: FLOAT
+      delay: '{$UPS.INTERVAL}'
+      history: 30d
+      trends: 365d
+      units: h
+      params: '{$UPS.CAPACITY}*last(//ups.BatteryVoltage)*{$UPS.USABLE}*{$UPS.EFF}*power(max(0,min(1,(last(//ups.BatteryVoltage)-{$UPS.BATTERY.VOLT.MIN})/({$UPS.BATTERY.VOLT.MAX}-{$UPS.BATTERY.VOLT.MIN}))),1.5)/max(1,last(//ups.OutputPowerEstimated))'
+      description: Heuristic voltage-adjusted remaining runtime in HOURS (not verified SOC). Uses host macros
+        CAPACITY, USABLE, EFF, BATTERY.VOLT.MIN/MAX and OutputPowerEstimated. Ensure MAX > MIN, calibrated battery
+        voltage and rated output power. Not a trustworthy shutdown timer for mixed 6S/7S Li-ion systems.
+    - uuid: 8aa2839994c84e8491491adfe06eff12
+      name: 'UPS: Effective battery capacity (configured)'
+      type: CALCULATED
+      key: ups.CapacityConfigured
+      value_type: FLOAT
+      delay: '{$UPS.INTERVAL}'
+      history: 30d
+      trends: 365d
+      units: Ah
+      params: '{$UPS.CAPACITY}'
+      description: Effective capacity in Ah set per host. 0 = unconfigured, not measured.
+    - uuid: d913937efdcf4c1685f2a18e9672f23c
+      name: 'UPS: Estimated remaining runtime (hours and minutes)'
+      type: DEPENDENT
+      key: ups.RuntimeFormatted
+      value_type: CHAR
+      history: 30d
+      master_item:
+        key: ups.RuntimeEstimated
+      preprocessing:
+      - type: JAVASCRIPT
+        parameters:
+        - 'var h = Number(value);
+
+          if (!isFinite(h) || h < 0) { throw "Runtime unavailable"; }
+
+          var m = Math.round(h * 60);
+
+          return Math.floor(m / 60) + " год " + (m % 60) + " хв";'
+        error_handler: DISCARD_VALUE
+      description: Display of heuristic ups.RuntimeEstimated as hours and minutes; numeric master retained for
+        history/graphs. Zero is a valid model output at or below configured minimum voltage.
+    - uuid: 55ea18c01fcc479686c0ade027c364a4
+      name: 'UPS: Джерело живлення'
+      type: DEPENDENT
+      key: ups.PowerStateCode
+      value_type: UNSIGNED
+      history: 30d
+      trends: 365d
+      valuemap:
+        name: KWDS UPS power source state UA
+      master_item:
+        key: ups_megatec.py["{$UPS.IP}","{$UPS.PORT}","{$UPS.TIMEOUT}"]
+      preprocessing:
+      - type: JAVASCRIPT
+        parameters:
+        - 'var d = JSON.parse(value);
+
+          var ob = Number(d["ups.OnBattery"]);
+
+          var lb = Number(d["ups.BatteryLow"]);
+
+          var st = String(d["ups.UpsStatus"] || "");
+
+          if (ob === 1 && lb === 1) { return 3; }
+
+          if (ob === 1) { return 2; }
+
+          if (ob === 0 && lb === 0 && st.indexOf("OL") !== -1) { return 1; }
+
+          return 0;'
+        error_handler: DISCARD_VALUE
+    - uuid: 0b112322974943c3b34f25ad1286e93c
+      name: 'Li-ion: Напруга комірки (оцінка)'
+      type: DEPENDENT
+      key: ups.CellVoltageEstimated
+      value_type: FLOAT
+      history: 30d
+      trends: 365d
+      units: V
+      master_item:
+        key: ups_megatec.py["{$UPS.IP}","{$UPS.PORT}","{$UPS.TIMEOUT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $["ups.BatteryRaw"]
+        error_handler: DISCARD_VALUE
+      - type: JAVASCRIPT
+        parameters:
+        - 'var k = Number(''{$UPS.CELL.MULTIPLIER}'');
+
+          var raw = Number(value);
+
+          if (!isFinite(k) || k <= 0 || !isFinite(raw) || raw < 0) { throw ''Cell voltage calibration not configured'';
+          }
+
+          return Math.round(raw * k * 100) / 100;'
+        error_handler: DISCARD_VALUE
+      description: Estimated voltage of a single Li-ion cell, derived as Q1 BatteryRaw * {$UPS.CELL.MULTIPLIER}.
+        Not independently measured; validate physically. Does not affect BatteryRaw, BatteryVoltage, runtime or
+        SOC. Округлення до 0.01 В для показу; це оцінка, не вимір BMS.
+    - uuid: 3e508ed483f9465a9c479000965901c9
+      name: 'UPS: Стан живлення (текст)'
+      type: DEPENDENT
+      key: ups.PowerStateText
+      value_type: CHAR
+      history: 30d
+      master_item:
+        key: ups_megatec.py["{$UPS.IP}","{$UPS.PORT}","{$UPS.TIMEOUT}"]
+      preprocessing:
+      - type: JAVASCRIPT
+        parameters:
+        - 'var d = JSON.parse(value);
+
+          var ob = Number(d["ups.OnBattery"]);
+
+          var lb = Number(d["ups.BatteryLow"]);
+
+          var st = String(d["ups.UpsStatus"] || "");
+
+          if (lb === 1) return "НИЗЬКИЙ ЗАРЯД";
+
+          if (ob === 1) return "БАТАРЕЯ";
+
+          if (ob === 0 && lb === 0 && st.indexOf("OL") !== -1) return "МЕРЕЖА";
+
+          return "НЕВІДОМО";'
+        error_handler: DISCARD_VALUE
+      description: Текст для головного віджета без суфікса (1.00). Числовий PowerStateCode зберігається окремо
+        для діагностики.
+    dashboards:
+    - uuid: 36e4b46db13f47718d2bcc5afd954157
+      name: KWDS POWER | NOC UA V10.7
+      pages:
+      - name: Огляд UPS · V10.7
+        widgets:
+        - type: item
+          name: 01 · ДЖЕРЕЛО ЖИВЛЕННЯ
+          x: '0'
+          y: '0'
+          width: '12'
+          height: '3'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: KWDS UPS Megatec by TCP
+              key: ups.PowerStateText
+          - type: INTEGER
+            name: value_size
+            value: '19'
+          - type: INTEGER
+            name: value_bold
+            value: '1'
+          - type: INTEGER
+            name: desc_size
+            value: '9'
+          - type: STRING
+            name: value_color
+            value: 34D399
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: STRING
+            name: desc_color
+            value: CBD5E1
+          - type: STRING
+            name: bg_color
+            value: '142327'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: STRING
+            name: description
+            value: Стан живлення
+        - type: item
+          name: 02 · ВХІДНА НАПРУГА
+          x: '12'
+          y: '0'
+          width: '12'
+          height: '3'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: KWDS UPS Megatec by TCP
+              key: ups.InputVoltage
+          - type: INTEGER
+            name: value_size
+            value: '24'
+          - type: INTEGER
+            name: value_bold
+            value: '1'
+          - type: INTEGER
+            name: desc_size
+            value: '10'
+          - type: STRING
+            name: value_color
+            value: 38BDF8
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: STRING
+            name: desc_color
+            value: CBD5E1
+          - type: STRING
+            name: bg_color
+            value: 0F172A
+          - type: INTEGER
+            name: decimal_size
+            value: '24'
+          - type: INTEGER
+            name: units_size
+            value: '24'
+        - type: item
+          name: 03 · ВИХІД UPS
+          x: '24'
+          y: '0'
+          width: '12'
+          height: '3'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: KWDS UPS Megatec by TCP
+              key: ups.OutputVoltage
+          - type: INTEGER
+            name: value_size
+            value: '24'
+          - type: INTEGER
+            name: value_bold
+            value: '1'
+          - type: INTEGER
+            name: desc_size
+            value: '10'
+          - type: STRING
+            name: value_color
+            value: 4ADE80
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: STRING
+            name: desc_color
+            value: CBD5E1
+          - type: STRING
+            name: bg_color
+            value: 0D1F17
+          - type: INTEGER
+            name: decimal_size
+            value: '24'
+          - type: INTEGER
+            name: units_size
+            value: '24'
+        - type: item
+          name: 04 · НАВАНТАЖЕННЯ
+          x: '36'
+          y: '0'
+          width: '12'
+          height: '3'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: KWDS UPS Megatec by TCP
+              key: ups.UpsLoad
+          - type: INTEGER
+            name: value_size
+            value: '24'
+          - type: INTEGER
+            name: value_bold
+            value: '1'
+          - type: INTEGER
+            name: desc_size
+            value: '10'
+          - type: STRING
+            name: value_color
+            value: FBBF24
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: STRING
+            name: desc_color
+            value: CBD5E1
+          - type: STRING
+            name: bg_color
+            value: 1F1A0D
+          - type: STRING
+            name: thresholds.0.color
+            value: 3A2F0B
+          - type: STRING
+            name: thresholds.0.threshold
+            value: '50'
+          - type: STRING
+            name: thresholds.1.color
+            value: 5A2D0C
+          - type: STRING
+            name: thresholds.1.threshold
+            value: '80'
+          - type: STRING
+            name: thresholds.2.color
+            value: 5B1A1A
+          - type: STRING
+            name: thresholds.2.threshold
+            value: '95'
+          - type: INTEGER
+            name: decimal_size
+            value: '24'
+          - type: INTEGER
+            name: units_size
+            value: '24'
+        - type: item
+          name: 05 · ТЕМПЕРАТУРА
+          x: '48'
+          y: '0'
+          width: '12'
+          height: '3'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: KWDS UPS Megatec by TCP
+              key: ups.UpsTemp
+          - type: INTEGER
+            name: value_size
+            value: '24'
+          - type: INTEGER
+            name: value_bold
+            value: '1'
+          - type: INTEGER
+            name: desc_size
+            value: '10'
+          - type: STRING
+            name: value_color
+            value: FB7185
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: STRING
+            name: desc_color
+            value: CBD5E1
+          - type: STRING
+            name: bg_color
+            value: 24131A
+          - type: STRING
+            name: thresholds.0.color
+            value: 3A2A12
+          - type: STRING
+            name: thresholds.0.threshold
+            value: '30'
+          - type: STRING
+            name: thresholds.1.color
+            value: 5A2D0C
+          - type: STRING
+            name: thresholds.1.threshold
+            value: '40'
+          - type: STRING
+            name: thresholds.2.color
+            value: 5B1A1A
+          - type: STRING
+            name: thresholds.2.threshold
+            value: '50'
+          - type: INTEGER
+            name: decimal_size
+            value: '24'
+          - type: INTEGER
+            name: units_size
+            value: '24'
+        - type: item
+          name: 06 · ЧАСТОТА
+          x: '60'
+          y: '0'
+          width: '12'
+          height: '3'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: KWDS UPS Megatec by TCP
+              key: ups.UpsFreq
+          - type: INTEGER
+            name: value_size
+            value: '24'
+          - type: INTEGER
+            name: value_bold
+            value: '1'
+          - type: INTEGER
+            name: desc_size
+            value: '10'
+          - type: STRING
+            name: value_color
+            value: A5B4FC
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: STRING
+            name: desc_color
+            value: CBD5E1
+          - type: STRING
+            name: bg_color
+            value: 17152B
+          - type: INTEGER
+            name: decimal_size
+            value: '24'
+          - type: INTEGER
+            name: units_size
+            value: '24'
+        - type: item
+          name: АКБ · НАПРУГА (ОЦІНКА)
+          x: '0'
+          y: '3'
+          width: '14'
+          height: '3'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: KWDS UPS Megatec by TCP
+              key: ups.BatteryVoltage
+          - type: INTEGER
+            name: value_size
+            value: '22'
+          - type: INTEGER
+            name: value_bold
+            value: '1'
+          - type: INTEGER
+            name: desc_size
+            value: '10'
+          - type: STRING
+            name: value_color
+            value: 34D399
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: STRING
+            name: desc_color
+            value: CBD5E1
+          - type: STRING
+            name: bg_color
+            value: '102018'
+          - type: INTEGER
+            name: decimal_size
+            value: '22'
+          - type: INTEGER
+            name: units_size
+            value: '22'
+          - type: INTEGER
+            name: decimal_places
+            value: '2'
+        - type: item
+          name: АКБ · ЄМНІСТЬ, Ah
+          x: '14'
+          y: '3'
+          width: '14'
+          height: '3'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: KWDS UPS Megatec by TCP
+              key: ups.CapacityConfigured
+          - type: INTEGER
+            name: value_size
+            value: '22'
+          - type: INTEGER
+            name: value_bold
+            value: '1'
+          - type: INTEGER
+            name: desc_size
+            value: '10'
+          - type: STRING
+            name: value_color
+            value: CBD5E1
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: STRING
+            name: desc_color
+            value: CBD5E1
+          - type: STRING
+            name: bg_color
+            value: 161B26
+          - type: INTEGER
+            name: decimal_size
+            value: '22'
+          - type: INTEGER
+            name: units_size
+            value: '22'
+        - type: item
+          name: ПОТУЖНІСТЬ · ОЦІНКА
+          x: '28'
+          y: '3'
+          width: '14'
+          height: '3'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: KWDS UPS Megatec by TCP
+              key: ups.OutputPowerEstimated
+          - type: INTEGER
+            name: value_size
+            value: '22'
+          - type: INTEGER
+            name: value_bold
+            value: '1'
+          - type: INTEGER
+            name: desc_size
+            value: '10'
+          - type: STRING
+            name: value_color
+            value: FBBF24
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: STRING
+            name: desc_color
+            value: CBD5E1
+          - type: STRING
+            name: bg_color
+            value: 22190C
+          - type: STRING
+            name: thresholds.0.color
+            value: 3A2F0B
+          - type: STRING
+            name: thresholds.0.threshold
+            value: '500'
+          - type: STRING
+            name: thresholds.1.color
+            value: 5A2D0C
+          - type: STRING
+            name: thresholds.1.threshold
+            value: '800'
+          - type: STRING
+            name: thresholds.2.color
+            value: 5B1A1A
+          - type: STRING
+            name: thresholds.2.threshold
+            value: '950'
+          - type: INTEGER
+            name: decimal_size
+            value: '22'
+          - type: INTEGER
+            name: units_size
+            value: '22'
+        - type: item
+          name: АВТОНОМНІСТЬ · ГОД / ХВ
+          x: '42'
+          y: '3'
+          width: '20'
+          height: '3'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: KWDS UPS Megatec by TCP
+              key: ups.RuntimeFormatted
+          - type: INTEGER
+            name: value_size
+            value: '19'
+          - type: INTEGER
+            name: value_bold
+            value: '1'
+          - type: STRING
+            name: value_color
+            value: FBBF24
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: INTEGER
+            name: desc_size
+            value: '10'
+          - type: STRING
+            name: desc_color
+            value: CBD5E1
+          - type: STRING
+            name: bg_color
+            value: 231B0B
+        - type: item
+          name: Li-ion · НАПРУГА КОМІРКИ (ОЦІНКА)
+          x: '62'
+          y: '3'
+          width: '10'
+          height: '3'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: KWDS UPS Megatec by TCP
+              key: ups.CellVoltageEstimated
+          - type: INTEGER
+            name: value_size
+            value: '22'
+          - type: INTEGER
+            name: value_bold
+            value: '1'
+          - type: INTEGER
+            name: desc_size
+            value: '10'
+          - type: STRING
+            name: value_color
+            value: C084FC
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: STRING
+            name: desc_color
+            value: CBD5E1
+          - type: STRING
+            name: bg_color
+            value: 1B1431
+          - type: INTEGER
+            name: decimal_size
+            value: '22'
+          - type: INTEGER
+            name: units_size
+            value: '22'
+          - type: INTEGER
+            name: decimal_places
+            value: '2'
+        - type: item
+          name: ЖИВЛЕННЯ ВІД АКБ
+          x: '0'
+          y: '6'
+          width: '24'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: KWDS UPS Megatec by TCP
+              key: ups.OnBattery
+          - type: INTEGER
+            name: value_size
+            value: '22'
+          - type: INTEGER
+            name: value_bold
+            value: '1'
+          - type: INTEGER
+            name: desc_size
+            value: '9'
+          - type: STRING
+            name: value_color
+            value: 34D399
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: STRING
+            name: desc_color
+            value: CBD5E1
+          - type: STRING
+            name: bg_color
+            value: '111827'
+          - type: STRING
+            name: thresholds.0.color
+            value: 5A2D0C
+          - type: STRING
+            name: thresholds.0.threshold
+            value: '1'
+          - type: INTEGER
+            name: decimal_size
+            value: '22'
+          - type: INTEGER
+            name: units_size
+            value: '22'
+        - type: item
+          name: НИЗЬКИЙ ЗАРЯД АКБ
+          x: '24'
+          y: '6'
+          width: '24'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: KWDS UPS Megatec by TCP
+              key: ups.BatteryLow
+          - type: INTEGER
+            name: value_size
+            value: '22'
+          - type: INTEGER
+            name: value_bold
+            value: '1'
+          - type: INTEGER
+            name: desc_size
+            value: '9'
+          - type: STRING
+            name: value_color
+            value: FB7185
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: STRING
+            name: desc_color
+            value: CBD5E1
+          - type: STRING
+            name: bg_color
+            value: '111827'
+          - type: STRING
+            name: thresholds.0.color
+            value: 5B1A1A
+          - type: STRING
+            name: thresholds.0.threshold
+            value: '1'
+          - type: INTEGER
+            name: decimal_size
+            value: '22'
+          - type: INTEGER
+            name: units_size
+            value: '22'
+        - type: item
+          name: MEGATEC · СТАТУСНІ БІТИ
+          x: '48'
+          y: '6'
+          width: '24'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: KWDS UPS Megatec by TCP
+              key: ups.StatusBits
+          - type: INTEGER
+            name: value_size
+            value: '20'
+          - type: INTEGER
+            name: value_bold
+            value: '1'
+          - type: INTEGER
+            name: desc_size
+            value: '9'
+          - type: STRING
+            name: value_color
+            value: CBD5E1
+          - type: INTEGER
+            name: show.0
+            value: '1'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+          - type: STRING
+            name: desc_color
+            value: CBD5E1
+          - type: STRING
+            name: bg_color
+            value: '111827'
+        - type: svggraph
+          name: НАПРУГА · ВХІД / ВИХІД
+          x: '0'
+          y: '8'
+          width: '24'
+          height: '5'
+          fields:
+          - type: INTEGER
+            name: ds.0.dataset_type
+            value: '0'
+          - type: STRING
+            name: ds.0.color.0
+            value: 38BDF8
+          - type: ITEM
+            name: ds.0.itemids.0
+            value:
+              host: KWDS UPS Megatec by TCP
+              key: ups.InputVoltage
+          - type: INTEGER
+            name: ds.0.width
+            value: '3'
+          - type: INTEGER
+            name: ds.0.fill
+            value: '0'
+          - type: INTEGER
+            name: ds.0.transparency
+            value: '0'
+          - type: INTEGER
+            name: ds.0.missingdatafunc
+            value: '0'
+          - type: INTEGER
+            name: ds.1.dataset_type
+            value: '0'
+          - type: STRING
+            name: ds.1.color.0
+            value: 34D399
+          - type: ITEM
+            name: ds.1.itemids.0
+            value:
+              host: KWDS UPS Megatec by TCP
+              key: ups.OutputVoltage
+          - type: INTEGER
+            name: ds.1.width
+            value: '3'
+          - type: INTEGER
+            name: ds.1.fill
+            value: '0'
+          - type: INTEGER
+            name: ds.1.transparency
+            value: '0'
+          - type: INTEGER
+            name: ds.1.missingdatafunc
+            value: '0'
+          - type: INTEGER
+            name: legend_columns
+            value: '2'
+          - type: STRING
+            name: reference
+            value: V6AAA
+        - type: svggraph
+          name: НАВАНТАЖЕННЯ · %
+          x: '24'
+          y: '8'
+          width: '24'
+          height: '5'
+          fields:
+          - type: INTEGER
+            name: ds.0.dataset_type
+            value: '0'
+          - type: STRING
+            name: ds.0.color.0
+            value: F59E0B
+          - type: ITEM
+            name: ds.0.itemids.0
+            value:
+              host: KWDS UPS Megatec by TCP
+              key: ups.UpsLoad
+          - type: INTEGER
+            name: ds.0.width
+            value: '3'
+          - type: INTEGER
+            name: ds.0.fill
+            value: '0'
+          - type: INTEGER
+            name: ds.0.transparency
+            value: '0'
+          - type: INTEGER
+            name: ds.0.missingdatafunc
+            value: '0'
+          - type: INTEGER
+            name: legend_columns
+            value: '1'
+          - type: STRING
+            name: reference
+            value: V6ABA
+        - type: svggraph
+          name: ТЕМПЕРАТУРА · °C
+          x: '48'
+          y: '8'
+          width: '24'
+          height: '5'
+          fields:
+          - type: INTEGER
+            name: ds.0.dataset_type
+            value: '0'
+          - type: STRING
+            name: ds.0.color.0
+            value: FB7185
+          - type: ITEM
+            name: ds.0.itemids.0
+            value:
+              host: KWDS UPS Megatec by TCP
+              key: ups.UpsTemp
+          - type: INTEGER
+            name: ds.0.width
+            value: '3'
+          - type: INTEGER
+            name: ds.0.fill
+            value: '0'
+          - type: INTEGER
+            name: ds.0.transparency
+            value: '0'
+          - type: INTEGER
+            name: ds.0.missingdatafunc
+            value: '0'
+          - type: INTEGER
+            name: legend_columns
+            value: '1'
+          - type: STRING
+            name: reference
+            value: V6ACA
+        - type: svggraph
+          name: ЧАСТОТА · Hz
+          x: '0'
+          y: '13'
+          width: '24'
+          height: '5'
+          fields:
+          - type: INTEGER
+            name: ds.0.dataset_type
+            value: '0'
+          - type: STRING
+            name: ds.0.color.0
+            value: A78BFA
+          - type: ITEM
+            name: ds.0.itemids.0
+            value:
+              host: KWDS UPS Megatec by TCP
+              key: ups.UpsFreq
+          - type: INTEGER
+            name: ds.0.width
+            value: '3'
+          - type: INTEGER
+            name: ds.0.fill
+            value: '0'
+          - type: INTEGER
+            name: ds.0.transparency
+            value: '0'
+          - type: INTEGER
+            name: ds.0.missingdatafunc
+            value: '0'
+          - type: INTEGER
+            name: legend_columns
+            value: '1'
+          - type: STRING
+            name: reference
+            value: V6ADA
+        - type: svggraph
+          name: АКБ · НАПРУГА (ОЦІНКА)
+          x: '24'
+          y: '13'
+          width: '24'
+          height: '5'
+          fields:
+          - type: INTEGER
+            name: ds.0.dataset_type
+            value: '0'
+          - type: STRING
+            name: ds.0.color.0
+            value: 34D399
+          - type: ITEM
+            name: ds.0.itemids.0
+            value:
+              host: KWDS UPS Megatec by TCP
+              key: ups.BatteryVoltage
+          - type: INTEGER
+            name: ds.0.width
+            value: '3'
+          - type: INTEGER
+            name: ds.0.fill
+            value: '0'
+          - type: INTEGER
+            name: ds.0.transparency
+            value: '0'
+          - type: INTEGER
+            name: ds.0.missingdatafunc
+            value: '0'
+          - type: INTEGER
+            name: legend_columns
+            value: '1'
+          - type: STRING
+            name: reference
+            value: V6AFA
+        - type: svggraph
+          name: АВТОНОМНІСТЬ · ГОДИНИ
+          x: '48'
+          y: '13'
+          width: '24'
+          height: '5'
+          fields:
+          - type: INTEGER
+            name: ds.0.dataset_type
+            value: '0'
+          - type: STRING
+            name: ds.0.color.0
+            value: FFB020
+          - type: ITEM
+            name: ds.0.itemids.0
+            value:
+              host: KWDS UPS Megatec by TCP
+              key: ups.RuntimeEstimated
+          - type: INTEGER
+            name: ds.0.width
+            value: '3'
+          - type: INTEGER
+            name: ds.0.fill
+            value: '0'
+          - type: INTEGER
+            name: ds.0.transparency
+            value: '0'
+          - type: INTEGER
+            name: ds.0.missingdatafunc
+            value: '0'
+          - type: INTEGER
+            name: legend_columns
+            value: '1'
+          - type: STRING
+            name: reference
+            value: V6AEA
+    valuemaps:
+    - uuid: 2e1a385a0c0b48239cb8df712205098c
+      name: KWDS UPS power source state UA
+      mappings:
+      - value: '0'
+        newvalue: НЕВІДОМО
+      - value: '1'
+        newvalue: МЕРЕЖА
+      - value: '2'
+        newvalue: БАТАРЕЯ
+      - value: '3'
+        newvalue: НИЗЬКИЙ ЗАРЯД
+    - uuid: b4e9cee4a0af48dcb116fa12586a3dac
+      name: KWDS UPS yes/no UA
+      mappings:
+      - value: '0'
+        newvalue: НІ
+      - value: '1'
+        newvalue: ТАК
+  triggers:
+  - uuid: d5a321676c1d491695ee53001f4d191e
+    expression: nodata(/KWDS UPS Megatec by TCP/ups.InputVoltage,{$UPS.NODATA})=1
+    name: 'UPS: No fresh data for {$UPS.NODATA}'
+    priority: HIGH
+    description: Check MikroTik RAW TCP port and Zabbix ExternalScripts. Detection time must exceed sampling interval.
+  - uuid: 203151e89aa34f2bb5d51d24f5aad5fd
+    expression: last(/KWDS UPS Megatec by TCP/ups.OnBattery)=1
+    name: 'UPS: On battery'
+    priority: HIGH
+  - uuid: 57473e85aa0f4ff198a4c07d950a8ba3
+    expression: last(/KWDS UPS Megatec by TCP/ups.BatteryLow)=1
+    name: 'UPS: Battery low'
+    priority: DISASTER
+  - uuid: 19c4c86e6de44a45b2b1d3257dbb4899
+    expression: last(/KWDS UPS Megatec by TCP/ups.InputVoltage)<{$UPS.INPUT.MIN}
+    name: 'UPS: Input voltage below {$UPS.INPUT.MIN} V'
+    priority: WARNING
+  - uuid: baad33fedab648ea966ba5621d218fcd
+    expression: last(/KWDS UPS Megatec by TCP/ups.InputVoltage)>{$UPS.INPUT.MAX}
+    name: 'UPS: Input voltage above {$UPS.INPUT.MAX} V'
+    priority: WARNING
+  - uuid: c2d9ef8803e44b1095248e185abbff33
+    expression: last(/KWDS UPS Megatec by TCP/ups.OutputVoltage)<{$UPS.OUTPUT.MIN}
+    name: 'UPS: Output voltage below {$UPS.OUTPUT.MIN} V'
+    priority: WARNING
+  - uuid: 2a93a93bffc04292ad725742bfa90b11
+    expression: last(/KWDS UPS Megatec by TCP/ups.OutputVoltage)>{$UPS.OUTPUT.MAX}
+    name: 'UPS: Output voltage above {$UPS.OUTPUT.MAX} V'
+    priority: WARNING
+  - uuid: 72570148d5974b7392fbd4b61779aa2f
+    expression: last(/KWDS UPS Megatec by TCP/ups.UpsLoad)>{$UPS.LOAD.MAX}
+    name: 'UPS: UPS load above {$UPS.LOAD.MAX}%'
+    priority: HIGH
+  - uuid: 539fa3ef9e924da981ed629f75ec3eef
+    expression: last(/KWDS UPS Megatec by TCP/ups.UpsTemp)>{$UPS.TEMP.MAX}
+    name: 'UPS: UPS temperature above {$UPS.TEMP.MAX}°C'
+    priority: WARNING
+  - uuid: 3afbfaf2fec8463fa43b888402db9f1c
+    expression: last(/KWDS UPS Megatec by TCP/ups.UpsFreq)<{$UPS.FREQ.MIN}
+    name: 'UPS: Frequency below {$UPS.FREQ.MIN} Hz'
+    priority: WARNING
+  - uuid: 16cb614bd5fa4d76a5e1541202344824
+    expression: last(/KWDS UPS Megatec by TCP/ups.UpsFreq)>{$UPS.FREQ.MAX}
+    name: 'UPS: Frequency above {$UPS.FREQ.MAX} Hz'
+    priority: WARNING
+  - uuid: d6668b53b1f94775a755f31dd749c6b0
+    expression: last(/KWDS UPS Megatec by TCP/ups.BatteryVoltage)<{$UPS.BATTERY.VOLT.WARN} and {$UPS.BATTERY.VOLT.WARN}>0
+      and {$UPS.BATTERY.MULTIPLIER}>0
+    name: 'UPS: Battery voltage low (below {$UPS.BATTERY.VOLT.WARN} V)'
+    priority: WARNING
+    description: Voltage estimates depend on host-specific calibration; only enable after verifying real battery
+      voltage.
+  - uuid: c6c3a3950f8541689db218f54ff62886
+    expression: last(/KWDS UPS Megatec by TCP/ups.BatteryVoltage)<{$UPS.BATTERY.VOLT.CRIT} and {$UPS.BATTERY.VOLT.CRIT}>0
+      and {$UPS.BATTERY.MULTIPLIER}>0
+    name: 'UPS: Battery voltage critical (below {$UPS.BATTERY.VOLT.CRIT} V)'
+    priority: HIGH
+    description: Voltage estimates depend on host-specific calibration; only enable after verifying real battery
+      voltage.
+  - uuid: 05c18ef43961465991f1d8a23e94e8ed
+    name: 'UPS: SOC warning <= {$UPS.SOC.WARN}% (requires calibrated SOC)'
+    expression: last(/KWDS UPS Megatec by TCP/ups.BatteryCharge)<={$UPS.SOC.WARN} and last(/KWDS UPS Megatec by
+      TCP/ups.BatteryCharge)>{$UPS.SOC.CRIT} and {$UPS.SOC.ALERTS.ENABLED}=1
+    priority: WARNING
+    description: Disabled by default (macro=0). Activate only with verified genuine SOC percent; BatteryRaw and
+      calculated voltage are not SOC.
+  - uuid: 1969705b7d854f4aa1c0b0ec65dd5961
+    name: 'UPS: SOC critical <= {$UPS.SOC.CRIT}% (requires calibrated SOC)'
+    expression: last(/KWDS UPS Megatec by TCP/ups.BatteryCharge)<={$UPS.SOC.CRIT} and {$UPS.SOC.ALERTS.ENABLED}=1
+    priority: HIGH
+    description: Disabled by default (macro=0). Activate only with verified genuine SOC percent; BatteryRaw and
+      calculated voltage are not SOC.
+  graphs:
+  - uuid: 049c410d8b274c8d9fab4947787f9ccd
+    name: KWDS UPS | Input and output voltage
+    graph_items:
+    - color: 2196F3
+      item:
+        host: KWDS UPS Megatec by TCP
+        key: ups.InputVoltage
+      sortorder: '0'
+    - color: 4CAF50
+      item:
+        host: KWDS UPS Megatec by TCP
+        key: ups.OutputVoltage
+      sortorder: '1'
+  - uuid: ef407294cd5043459bfcea8cb2fc7d2e
+    name: KWDS UPS | Load (%)
+    graph_items:
+    - color: FF9800
+      item:
+        host: KWDS UPS Megatec by TCP
+        key: ups.UpsLoad
+      sortorder: '0'
+  - uuid: 98321a6f915343eb8dafb8f9ce4f641d
+    name: KWDS UPS | Temperature (C)
+    graph_items:
+    - color: E91E63
+      item:
+        host: KWDS UPS Megatec by TCP
+        key: ups.UpsTemp
+      sortorder: '0'
+  - uuid: 492428e368ae43a48265e7be545dc39a
+    name: KWDS UPS | Frequency (Hz)
+    graph_items:
+    - color: 00BCD4
+      item:
+        host: KWDS UPS Megatec by TCP
+        key: ups.UpsFreq
+      sortorder: '0'
+  - uuid: 4a35de54c8804da9b03557023829fdd3
+    name: KWDS UPS | Battery RAW (uncalibrated)
+    graph_items:
+    - color: 9C27B0
+      item:
+        host: KWDS UPS Megatec by TCP
+        key: ups.BatteryRaw
+      sortorder: '0'
+  - uuid: c9025214af6949d4ace936b4fb013059
+    name: KWDS UPS | Battery pack voltage (calibrated)
+    graph_items:
+    - color: 673AB7
+      item:
+        host: KWDS UPS Megatec by TCP
+        key: ups.BatteryVoltage
+      sortorder: '0'

@@ -21,7 +21,7 @@ python3 -m py_compile /usr/lib/zabbix/externalscripts/ups_megatec.py
 sudo -u zabbix /usr/lib/zabbix/externalscripts/ups_megatec.py 172.16.0.25 9999 3
 ```
 
-Після успішного тесту імпортувати `zabbix/KWDS_UPS_V10_5_Zabbix8.yaml` у **Data collection → Templates → Import**. **Update existing** увімкнути для потрібних сутностей; **Delete missing** — вимкнути. Імпорт перевіряти за фактичними повідомленнями Zabbix, бо 8.0.0rc1 має особливості формату.
+Після успішного тесту імпортувати `zabbix/KWDS_UPS_V10_7_Final_Zabbix8.yaml` у **Data collection → Templates → Import**. **Update existing** увімкнути для потрібних сутностей; **Delete missing** — вимкнути. Імпорт перевіряти за фактичними повідомленнями Zabbix, бо 8.0.0rc1 має особливості формату.
 
 Перевірити Zabbix host `mt_PWR_Pochaiv` (visible `PWR_Ups-Mon - Почаїв - 0.25`), master item external check:
 
